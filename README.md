@@ -18,12 +18,11 @@ Bash Script
 ------------
 Script cut images with ImageMagick application. 
 Prameters: 
-mandatory: -d <directory> 
-optional: -p <prefix for tiles name> -s <size for each tiles, default: 256>
+optional: -p prefix for tiles name -s size for each tiles, default: 256
 
 Java Application (java 1.8)
 ------------
-MAC: start with <java -XstartOnFirstThread -jar cutImage.jar> from jar-directory.
+MAC: start with java -XstartOnFirstThread -jar cutImage.jar from jar-directory.
 Selection of image or image-directory for cut more images, define prefix for tiles name and size for tile (default: 256)
 
 Eclipse Project

@@ -2,15 +2,12 @@
 
 usage ()
 {
-  echo 'Usage : Script -d <directory> -p <prefix> -s <size>'
+  echo 'Usage : Script -p <prefix> -s <size>'
   exit
 }
 
 while [ "$1" != "" ]; do
 case $1 in
-		-d )           shift
-			           DIRECTORY=$1
-			           ;;
         -p )           shift
                        PREFIX=$1
                        ;;
@@ -20,11 +17,6 @@ case $1 in
     esac
     shift
 done
-
-if [ "$DIRECTORY" = "" ];
-then
-    usage
-fi
 
 if [ -x /opt/ImageMagick ]; then
 	echo "Cut image with ImageMagick"
