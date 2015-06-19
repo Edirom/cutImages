@@ -25,6 +25,10 @@ Java Application (java 1.8)
 MAC: start with java -XstartOnFirstThread -jar cutImage.jar from jar-directory.
 Selection of image or image-directory for cut more images, define prefix for tiles name and size for tile (default: 256)
 
+You can run this command from the projects root directory by executing:
+
+`bin/run.sh`
+
 Eclipse Project
 ------------
 Luna with java 1.8
