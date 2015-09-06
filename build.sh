@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Set the path to the ImageMagick root dir her if you want to use a distinct version
+IMAGEMAGICK_ROOT=/opt/ImageMagick
+
 usage ()
 {
   echo 'Usage : Script -p <prefix> -s <size>'
@@ -18,8 +21,14 @@ case $1 in
     shift
 done
 
-if [ -x /opt/ImageMagick ]; then
-	echo "Cut image with ImageMagick"
+if [ $(command -v $IMAGEMAGICK_ROOT/bin/convert) ] && [ $(command -v $IMAGEMAGICK_ROOT/bin/identify) ]; then
+    IDENTIFY=$IMAGEMAGICK_ROOT/bin/identify
+    CONVERT=$IMAGEMAGICK_ROOT/bin/convert
+    echo "Using ImageMagick from supplied location $IMAGEMAGICK_ROOT"
+elif [ $(command -v convert) ] && [ $(command -v identify) ]; then
+    IDENTIFY=identify
+    CONVERT=convert
+	echo "Using ImageMagick from PATH variable"
 else
 	echo "ImageMagick is not installed"
 fi
@@ -37,8 +46,8 @@ for file in `ls *.JPG *.jpg *.bmp *.BMP *.gif *.GIF *.WBMP *.png *.PNG *.jpeg *.
 	 echo "cut in directory: $newDirectory"
 
 # Get image size
-height=$(/opt/ImageMagick/bin/identify -format %H $file)
-width=$(/opt/ImageMagick/bin/identify -format %W $file)
+height=$($IDENTIFY -format %H $file)
+width=$($IDENTIFY -format %W $file)
 
 echo "$width x $height"
 
@@ -72,15 +81,15 @@ echo "zoom levels $newZoom"
 while [ $width -ge $TILESIZE ] || [ $height -ge $TILESIZE ]
 do	
 	if [ $level == $maxLevel ]; then
-		/opt/ImageMagick/bin/convert $file -crop "$TILESIZE"x"$TILESIZE" \
+		$CONVERT $file -crop "$TILESIZE"x"$TILESIZE" \
 		          -set filename:tile $newZoom"-%[fx:page.x/$TILESIZE]-%[fx:page.y/$TILESIZE]" \
 		          +repage +adjoin $newDirectory"/"$PREFIX%[filename:tile]"."$extension
 		newZoom=$(($newZoom-1))
 		level=$(($level-1))
 		# minimize size to 50%
-		/opt/ImageMagick/bin/convert $file -resize 50% $newZoom"-ZOOM-"$file
+		$CONVERT $file -resize 50% $newZoom"-ZOOM-"$file
 	else
-		/opt/ImageMagick/bin/convert $newZoom"-ZOOM-"$file -crop "$TILESIZE"x"$TILESIZE" \
+		$CONVERT $newZoom"-ZOOM-"$file -crop "$TILESIZE"x"$TILESIZE" \
 		          -set filename:tile $newZoom"-%[fx:page.x/$TILESIZE]-%[fx:page.y/$TILESIZE]" \
 		          +repage +adjoin $newDirectory"/"$PREFIX%[filename:tile]"."$extension		
 		levelOld=$level
@@ -88,12 +97,12 @@ do
 		newZoomOld=$newZoom
 		newZoom=$(($newZoom-1))		
 		# minimized Image minimize to 50%
-		/opt/ImageMagick/bin/convert $newZoomOld"-ZOOM-"$file -resize 50% $newZoom"-ZOOM-"$file
+		$CONVERT $newZoomOld"-ZOOM-"$file -resize 50% $newZoom"-ZOOM-"$file
 	fi
 		
 	# Get image size
-	height=$(/opt/ImageMagick/bin/identify -format %H $newZoom"-ZOOM-"$file)
-	width=$(/opt/ImageMagick/bin/identify -format %W $newZoom"-ZOOM-"$file)
+	height=$($IDENTIFY -format %H $newZoom"-ZOOM-"$file)
+	width=$($IDENTIFY -format %W $newZoom"-ZOOM-"$file)
 	
 	echo "$width x $height"
 done
